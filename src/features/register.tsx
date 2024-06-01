@@ -4,6 +4,7 @@ import { Button, Link } from "@nextui-org/react"
 import { useForm } from "react-hook-form"
 import { useRegisterMutation } from "../app/services/userApi"
 import { hasErrorField } from "../utils/has-error-field"
+import { ErrorMessage } from "../components/error-message"
 
 type Register = {
   email: string
@@ -67,6 +68,7 @@ export const Register = ({ setSelected }: Props) => {
         type="password"
         required="Обязательное поле"
       />
+      <ErrorMessage error={error} />
       <p className="text-center text-small">
         Уже есть аккаунт?{" "}
         <Link
