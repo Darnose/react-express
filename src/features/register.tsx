@@ -1,12 +1,13 @@
-import { Input } from "../components/input"
-import { useForm } from "react-hook-form"
-import { Button, Link } from "@nextui-org/react"
-import { useLazyCurrentQuery, useLoginMutation } from "../app/services/userApi"
-import { useNavigate } from "react-router-dom"
 import { useState } from "react"
+import { Input } from "../components/input"
+import { Button, Link } from "@nextui-org/react"
+import { useForm } from "react-hook-form"
+import { useRegisterMutation } from "../app/services/userApi"
+import { hasErrorField } from "../utils/has-error-field"
 
-type Login = {
+type Register = {
   email: string
+  name: string
   password: string
 }
 
@@ -14,32 +15,44 @@ type Props = {
   setSelected: (value: string) => void
 }
 
-export const Login = ({ setSelected }: Props) => {
+export const Register = ({ setSelected }: Props) => {
   const {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<Login>({
+  } = useForm<Register>({
     mode: "onChange",
     reValidateMode: "onBlur",
     defaultValues: {
       email: "",
       password: "",
+      name: "",
     },
   })
 
-  const [login, { isLoading }] = useLoginMutation()
-  const navigate = useNavigate()
+  const [register] = useRegisterMutation()
   const [error, setError] = useState("")
-  const [triggerCurrentQuery] = useLazyCurrentQuery()
 
-  const onSubmit = async (data: Login) => {
+  const onSubmit = async (data: Register) => {
     try {
-      await login(data).unwrap()
-    } catch (error) {}
+      await register(data).unwrap()
+      setSelected("login")
+    } catch (error) {
+      if (hasErrorField(error)) {
+        setError(error.data.error)
+      }
+    }
   }
+
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+      <Input
+        control={control}
+        name="name"
+        label="Имя"
+        type="text"
+        required="Обязательное поле"
+      />
       <Input
         control={control}
         name="email"
@@ -55,18 +68,18 @@ export const Login = ({ setSelected }: Props) => {
         required="Обязательное поле"
       />
       <p className="text-center text-small">
-        Нет аккаутна?{" "}
+        Уже есть аккаунт?{" "}
         <Link
           size="sm"
           className="cursor-pointer"
-          onPress={() => setSelected("sign-up")}
+          onPress={() => setSelected("login")}
         >
-          Зарегистрируйтесь
+          Войдите
         </Link>
       </p>
       <div className="flex gap-2 justify-end">
-        <Button fullWidth color="primary" type="submit" isLoading={isLoading}>
-          Войти
+        <Button fullWidth color="primary" type="submit">
+          Зарегистрироваться
         </Button>
       </div>
     </form>
