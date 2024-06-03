@@ -1,7 +1,6 @@
 import React from "react"
 import { createRoot } from "react-dom/client"
 import { Provider } from "react-redux"
-import App from "./App"
 import { store } from "./app/store"
 import "./index.css"
 import { NextUIProvider } from "@nextui-org/react"
@@ -14,6 +13,7 @@ import { CurrentPost } from "./pages/current-post"
 import { UserProfile } from "./pages/user-profile"
 import { Followers } from "./pages/followers"
 import { Following } from "./pages/following"
+import { AuthGuard } from "./features/user/authGuard"
 
 const container = document.getElementById("root")
 
@@ -58,7 +58,9 @@ if (container) {
       <Provider store={store}>
         <NextUIProvider>
           <ThemeProvider>
-            <RouterProvider router={router} />
+            <AuthGuard>
+              <RouterProvider router={router} />
+            </AuthGuard>
           </ThemeProvider>
         </NextUIProvider>
       </Provider>

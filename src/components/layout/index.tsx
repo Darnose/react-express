@@ -1,10 +1,25 @@
-import React from "react"
+import { useEffect } from "react"
 import { Header } from "../header"
 import { Container } from "../container"
 import { NavBar } from "../nav-bar"
-import { Outlet } from "react-router-dom"
+import { Outlet, useNavigate } from "react-router-dom"
+import {
+  selectIsAuthenticated,
+  selectUser,
+} from "../../features/user/userSlice"
+import { useAppSelector } from "../../app/hooks"
 
 export const Layout = () => {
+  const isAuthenticated = useAppSelector(selectIsAuthenticated)
+  const user = useAppSelector(selectUser)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/auth")
+    }
+  }, [])
+
   return (
     <>
       <Header />
