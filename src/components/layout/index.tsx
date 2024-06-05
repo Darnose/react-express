@@ -19,7 +19,7 @@ export const Layout = () => {
     if (!isAuthenticated) {
       navigate("/auth")
     }
-  }, [])
+  })
 
   return (
     <>
