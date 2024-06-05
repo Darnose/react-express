@@ -8,6 +8,7 @@ import {
   selectUser,
 } from "../../features/user/userSlice"
 import { useAppSelector } from "../../app/hooks"
+import { Profile } from "../profile"
 
 export const Layout = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
@@ -18,7 +19,7 @@ export const Layout = () => {
     if (!isAuthenticated) {
       navigate("/auth")
     }
-  }, [])
+  })
 
   return (
     <>
@@ -30,6 +31,7 @@ export const Layout = () => {
         <div className="flex-1 p-4">
           <Outlet />
         </div>
+        <div className="flex-2 p-4">{!user && <Profile />}</div>
       </Container>
     </>
   )
