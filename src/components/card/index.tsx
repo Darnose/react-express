@@ -29,6 +29,8 @@ import { FcDislike } from "react-icons/fc"
 import { MdOutlineFavoriteBorder } from "react-icons/md"
 import { FaRegComment } from "react-icons/fa"
 import { ErrorMessage } from "../error-message"
+import { hasErrorField } from "../../utils/has-error-field"
+import { Button } from "../button"
 
 type Props = {
   avatarUrl: string
@@ -67,6 +69,49 @@ export const Card: React.FC<Props> = ({
   const navigate = useNavigate()
   const currentUser = useAppSelector(selectCurrent)
 
+  const refetchPosts = async () => {
+    switch (cardFor) {
+      case "post":
+        await triggerGetAllPosts().unwrap()
+        break
+      case "current-post":
+        await triggerGetAllPosts().unwrap()
+        break
+      case "comment":
+        await triggerGetAllPosts().unwrap()
+        break
+      default:
+        throw new Error("Неверный аргумент cardFor")
+    }
+  }
+
+  const handleDelete = async () => {
+    try {
+      switch (cardFor) {
+        case "post":
+          await deletePost(id).unwrap()
+          await refetchPosts()
+          break
+        case "current-post":
+          await deletePost(id).unwrap()
+          navigate("/")
+          break
+        case "comment":
+          await deletePost(id).unwrap()
+          await refetchPosts()
+          break
+        default:
+          throw new Error("Неверный аргумент cardFor")
+      }
+    } catch (error) {
+      if (hasErrorField(error)) {
+        setError(error.data.error)
+      } else {
+        setError(error as string)
+      }
+    }
+  }
+
   return (
     <NextUiCard className="mt-5">
       <CardHeader className="justify-between items-center bg-transparent">
@@ -79,7 +124,7 @@ export const Card: React.FC<Props> = ({
           />
         </Link>
         {authorId === currentUser?.id && (
-          <div className="cursor-pointer">
+          <div className="cursor-pointer" onClick={handleDelete}>
             {deletePostStatus.isLoading || deleteCommentStatus.isLoading ? (
               <Spinner />
             ) : (
