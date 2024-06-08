@@ -30,7 +30,6 @@ import { MdOutlineFavoriteBorder } from "react-icons/md"
 import { FaRegComment } from "react-icons/fa"
 import { ErrorMessage } from "../error-message"
 import { hasErrorField } from "../../utils/has-error-field"
-import { Button } from "../button"
 
 type Props = {
   avatarUrl: string
@@ -65,7 +64,7 @@ export const Card: React.FC<Props> = ({
   const [triggerGetPostById] = useLazyGetPostByIdQuery()
   const [deletePost, deletePostStatus] = useDeletePostMutation()
   const [deleteComment, deleteCommentStatus] = useDeleteCommentMutation()
-  const [error, setError] = useState()
+  const [error, setError] = useState("")
   const navigate = useNavigate()
   const currentUser = useAppSelector(selectCurrent)
 
@@ -85,6 +84,22 @@ export const Card: React.FC<Props> = ({
     }
   }
 
+  const handleClick = async () => {
+    try {
+      likedByUser
+        ? await unlikePost(id).unwrap()
+        : await likePost({ postId: id }).unwrap()
+
+      await refetchPosts()
+    } catch (error) {
+      if (hasErrorField(error)) {
+        setError(error.data.error)
+      } else {
+        setError(error as string)
+      }
+    }
+  }
+
   const handleDelete = async () => {
     try {
       switch (cardFor) {
@@ -97,7 +112,7 @@ export const Card: React.FC<Props> = ({
           navigate("/")
           break
         case "comment":
-          await deletePost(id).unwrap()
+          await deletePost(commentId).unwrap()
           await refetchPosts()
           break
         default:
@@ -139,7 +154,7 @@ export const Card: React.FC<Props> = ({
       {cardFor !== "comment" && (
         <CardFooter className="gap-3">
           <div className="flex gap-5 items-center">
-            <div>
+            <div onClick={handleClick}>
               <MetaInfo
                 count={likesCount}
                 Icon={likedByUser ? FcDislike : MdOutlineFavoriteBorder}
