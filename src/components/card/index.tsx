@@ -74,10 +74,10 @@ export const Card: React.FC<Props> = ({
         await triggerGetAllPosts().unwrap()
         break
       case "current-post":
-        await triggerGetAllPosts().unwrap()
+        await triggerGetPostById(id).unwrap()
         break
       case "comment":
-        await triggerGetAllPosts().unwrap()
+        await triggerGetPostById(id).unwrap()
         break
       default:
         throw new Error("Неверный аргумент cardFor")
@@ -112,7 +112,7 @@ export const Card: React.FC<Props> = ({
           navigate("/")
           break
         case "comment":
-          await deletePost(commentId).unwrap()
+          await deleteComment(commentId).unwrap()
           await refetchPosts()
           break
         default:
