@@ -29,7 +29,7 @@ export const userApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
-    getUserById: builder.query<User, void>({
+    getUserById: builder.query<User, string>({
       query: id => ({
         url: `/users/${id}`,
         method: "GET",
