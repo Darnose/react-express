@@ -58,6 +58,18 @@ export const UserProfile = () => {
     }
   }
 
+  const handleClose = async () => {
+    try {
+      if (id) {
+        await triggerGetUserById(id)
+        await triggerCurrentQuery()
+        onClose()
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   if (!data) {
     return null
   }
@@ -113,7 +125,7 @@ export const UserProfile = () => {
             <CountInfo count={data.following.length} title="Подписки" />
           </div>
         </Card>
-        <EditProfile isOpen={isOpen} onClose={onClose} user={data} />
+        <EditProfile isOpen={isOpen} onClose={handleClose} user={data} />
       </div>
     </>
   )
